@@ -1,0 +1,24 @@
+{
+  "name": "node-yolov8",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "files": [
+    "binding.gyp",
+    "src/*",
+    "index.js",
+    "README.md"
+  ],
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "test": "node test/test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-addon-api": "^8.3.0",
+    "node-gyp": "^11.0.0"
+  },
+  "gypfile": true
+}
