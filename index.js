@@ -57,6 +57,22 @@ class AddonWrapper {
             throw new Error(`Failed to call hello: ${err.message}`);
         }
     }
+
+    enableGpu(state) {
+        try {
+            return addon.enableGpu(state);
+        } catch (err) {
+            throw new Error(`Failed to call hello: ${err.message}`);
+        }
+    }
+
+    enableDebug(state) {
+        try {
+            return addon.enableDebug(state);
+        } catch (err) {
+            throw new Error(`Failed to call hello: ${err.message}`);
+        }
+    }
 }
 
 // 创建单例实例
@@ -68,6 +84,9 @@ module.exports = {
     getMachineCode: (...args) => instance.getMachineCode(...args),
     detect: (img, w, h) => instance.detect(img, w, h),
     detectAsync: (img, w, h, callback) => instance.detectAsync(img, w, h, callback),
+    enableGpu: (state) => instance.enableGpu(state || false),
+    enableDebug: () => instance.enableDebug(),
+
     // 导出原始addon对象，以防高级用户需要直接访问
     _raw: addon
 };

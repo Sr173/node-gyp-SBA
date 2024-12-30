@@ -26,7 +26,7 @@ public:
     // 在工作线程中执行
     void Execute() override {
         // 调用原始的检测函数
-        size_t len = detect(bin, width, height, outbuf.data(), outbuf.size(), false);
+        size_t len = detect(bin, width, height, outbuf.data(), outbuf.size(), debug_gpu);
         outbuf.resize(len);
     }
 
@@ -57,6 +57,17 @@ Napi::String nodeGetMachineCode(const Napi::CallbackInfo& info) {
 	return Napi::String::New(env, std::string(result, result + 32));
 }
 
+Napi::Boolean nodeEnableGpu(const Napi::CallbackInfo& info) {
+    auto swi = info[0].As<Napi::Boolean>();
+    enable_gpu(swi.Value());
+    return Napi::Boolean::New(info.Env(), swi);
+}
+
+Napi::Boolean nodeSetDebug(const Napi::CallbackInfo& info) {
+    debug_gpu = true;
+    return Napi::Boolean::New(info.Env(), true);
+}
+
 Napi::String nodeYoloDetect(const Napi::CallbackInfo& info) {
 	Napi::Env env = info.Env();
 	auto buffer = info[0].As<Napi::ArrayBuffer>();
@@ -64,7 +75,7 @@ Napi::String nodeYoloDetect(const Napi::CallbackInfo& info) {
 
 	std::string outbuf;
 	outbuf.resize(2 * 1024 * 1024);
-	auto len = detect(bin, info[1].As<Napi::Number>().Int32Value(), info[2].As<Napi::Number>().Int32Value(), outbuf.data(), outbuf.size(), false);
+	auto len = detect(bin, info[1].As<Napi::Number>().Int32Value(), info[2].As<Napi::Number>().Int32Value(), outbuf.data(), outbuf.size(), debug_gpu);
 	outbuf.resize(len);
 	return Napi::String::New(env, outbuf);
 }
@@ -100,6 +111,8 @@ Napi::Value nodeYoloDetectAsync(const Napi::CallbackInfo& info) {
     return env.Undefined();
 }
 
+
+
 // 设置类似于 exports = {key:value}的模块导出
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(
@@ -117,6 +130,13 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
   exports.Set("detect",
       Napi::Function::New(env, nodeYoloDetect));
+
+    exports.Set("enableGpu",
+        Napi::Function::New(env, nodeEnableGpu));
+
+    exports.Set("enableDebug",
+        Napi::Function::New(env, nodeSetDebug));
+
   return exports;
 }
 
